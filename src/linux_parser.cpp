@@ -171,9 +171,10 @@ float LinuxParser::CpuUtilization(int pid) {
     }
     //totalTime = utime + stime
     // with child processes totalTime += cutime + cstime
-    int totalTime = stoi(columns[13]) + stoi(columns[14]) + stoi(columns[15]) + stoi(columns[16]);
+    int totalProcessTicks = stoi(columns[13]) + stoi(columns[14]) + stoi(columns[15]) + stoi(columns[16]);
+    float totalProcessTime = totalProcessTicks / (float)sysconf(_SC_CLK_TCK);
     long totalSeconds = UpTime() - UpTime(pid);
-    utilization = totalSeconds != 0 ? 100.0 * ((totalTime/sysconf(_SC_CLK_TCK))/totalSeconds) : 0.0;
+    utilization = totalSeconds != 0 ? (totalProcessTime/(float)totalSeconds) : 0.0;
   }
   return utilization;
 }
@@ -254,8 +255,6 @@ string LinuxParser::User(int pid) {
   return "";
 }
 
-// TODO: Read and return the uptime of a process
-// REMOVE: [[maybe_unused]] once you define the function
 long LinuxParser::UpTime(int pid) {
   string line;
   string column;
